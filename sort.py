@@ -42,8 +42,9 @@ def unpack_archive(path: Path, sort: bool) -> None:
                     unpack_path = item.parent / archive_folder_name
                     unpack_path.mkdir(exist_ok=True)
                     shutil.unpack_archive(str(item), extract_dir=str(unpack_path))
-                    if sort == True:
+                    if sort:
                         sort_folder(unpack_path)
+                        delete_empty_folders(unpack_path)
                         print(f"{item} - unpacked and sorted")
                     if sort == False:
                         print(f"{item} - unpacked")
