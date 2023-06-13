@@ -1,4 +1,4 @@
-import sys, os, shutil 
+import sys, shutil 
 from pathlib import Path
 from normalize import normalize
 
@@ -18,10 +18,10 @@ def move_file(file: Path, root_dir: Path, categorie: str) -> None:
 
 
 def delete_empty_folders(path: Path) -> None:
-    for item in path.glob("**/*"):
+    for item in reversed(list(path.glob("**/*"))):
         if item.is_dir():
-            if len(os.listdir(item)) == 0:
-                os.rmdir(item)
+            if not any(item.iterdir()):
+                item.rmdir()
 
 
 def get_categories(file: Path) -> str:
@@ -45,9 +45,9 @@ def unpack_archive(path: Path, sort: bool) -> None:
                     if sort:
                         sort_folder(unpack_path)
                         delete_empty_folders(unpack_path)
-                        print(f"{item} - unpacked and sorted")
+                        print(f"/// {item} - unpacked and sorted")
                     if sort == False:
-                        print(f"{item} - unpacked")
+                        print(f"/// {item} - unpacked")
 
 
 def sort_folder(path: Path) -> None:
@@ -61,19 +61,19 @@ def main():
     try:
         path = Path(sys.argv[1])
     except IndexError:
-        return "No path to folder"
+        return "/// No path to folder"
     
     if not path.exists():
-        return f"Folder {path} not found."
+        return f"/// Folder {path} not found."
     
     sort_folder(path)
-    print(f"[{path}] \nSorted")
+    print(f"/// [{path}] \n/// Sorted")
     delete_empty_folders(path)
-    print("Empty folders deleted")
+    print("/// Empty folders deleted")
     wait_sort = True
 
     while wait_sort:
-        sort = input("Sort unpacked archives? Y - Yes, N - No : ")
+        sort = input("/// Sort unpacked archives? (Y - Yes, N - No) >>> ")
         if sort == "Y" or sort == "y":
             sort = True
             unpack_archive(path, True)
